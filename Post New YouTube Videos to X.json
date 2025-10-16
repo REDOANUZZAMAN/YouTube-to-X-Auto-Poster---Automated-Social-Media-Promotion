@@ -1,0 +1,154 @@
+{
+  "name": "Post New YouTube Videos to X",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# https://github.com/REDOANUZZAMAN",
+        "height": 80,
+        "width": 688,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        18304,
+        6896
+      ],
+      "typeVersion": 1,
+      "id": "414eaa7c-6930-43f5-85e0-8a5ca623cb9e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.message.content }}",
+        "additionalFields": {}
+      },
+      "id": "c2a9f4aa-67db-4c83-af68-29674984eb7e",
+      "name": "Post to X",
+      "type": "n8n-nodes-base.twitter",
+      "position": [
+        19040,
+        7120
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-3.5-turbo",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Write an engaging post about my latest YouTube video for X (Twitter) of no more than 140 characters in length. Link to the video at https://youtu.be/{{ $json.id.videoId }} use this title and description: {{ $json.snippet.title }} {{ $json.snippet.description }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9f718703-e4a6-4869-8cec-02f37a4fddba",
+      "name": "Generate Post for X with ChatGPT",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        18656,
+        7120
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "limit": 1,
+        "filters": {
+          "channelId": "UC08Fah8EIryeOZRkjBRohcQ",
+          "publishedAfter": "={{ new Date(new Date().getTime() - 30 * 60000).toISOString() }}"
+        },
+        "options": {}
+      },
+      "id": "82e00cac-15d0-4469-86c4-650a7d6be9e1",
+      "name": "Fetch Latest Videos",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        18432,
+        7120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "7bfc78ab-5fce-4fe9-8415-84bfa10e11ce",
+      "name": "Check Every 30 Min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        18224,
+        7120
+      ],
+      "typeVersion": 1.2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Check Every 30 Min": {
+      "main": [
+        [
+          {
+            "node": "Fetch Latest Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Latest Videos": {
+      "main": [
+        [
+          {
+            "node": "Generate Post for X with ChatGPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Post for X with ChatGPT": {
+      "main": [
+        [
+          {
+            "node": "Post to X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c356615b-a269-4e0d-812b-9dcf1278941a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ea5ee65f04b27a744235742229cd33fb9bc1c1a8cd25b6ec8329b2619003115"
+  },
+  "id": "aABkxEso7UJYqtFW",
+  "tags": [
+    {
+      "name": "AI",
+      "id": "sB8amNfmY6vlm7UO",
+      "createdAt": "2025-10-16T16:21:37.376Z",
+      "updatedAt": "2025-10-16T16:21:37.376Z"
+    }
+  ]
+}
